@@ -12,7 +12,7 @@ Before trying to execute the jar file, please configure the backup directory of 
 ```
 [main]
 inputPath = /home/yy20716/Dropbox/Apps/Feedly Vault/Saved For Later/2017
-outputPath = /home/hadoop/backup
+outputPath = /home/yy20716/backup
 ```
 Then finally execute the jar file for crawling images as follows.
 ```
