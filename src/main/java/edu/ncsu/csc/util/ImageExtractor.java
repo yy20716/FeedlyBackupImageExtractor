@@ -1,5 +1,13 @@
 package edu.ncsu.csc.util;
 
+import org.ini4j.Wini;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -10,26 +18,24 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.concurrent.TimeUnit;
 
-import org.ini4j.Wini;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+/**
+ * @author HyeongSik Kim (hkim22@ncsu.edu, yy20716@gmail.com)
+ */
 public class ImageExtractor {
 	private static final Logger log = LoggerFactory.getLogger(ImageExtractor.class);
-	/** we assume that we only consider three common image types when we extract images from pages */
+
+	/**
+	 * For now, we assume that we only consider three common image types
+	 * when we extract images from pages */
 	private String[] imageType = {"gif", "png", "jpg"};
 	private String outputPath = null;
 	
-	/** let us assume that we overwrite if the same file already exists */
+	/** Let us assume that we overwrite if the same file already exists */
 	static CopyOption[] options = new CopyOption[]{
 			StandardCopyOption.REPLACE_EXISTING,
 	};
 
-	private void setOutputPath(String outputPath) {
+	public void setOutputPath(String outputPath) {
 		this.outputPath = outputPath;
 	}
 
@@ -37,8 +43,10 @@ public class ImageExtractor {
 	 * download and copy images into the directory specified as output
 	 * @param link an element that represents an image link 
 	 */
-	private void downloadImage(Element link) {
+	public void downloadImage(Element link) {
 		String linkSrc = link.attr("src");
+
+		/** We skip downloading process if the link contains nothing */
 		if (linkSrc.isEmpty())
 			return;
 
@@ -55,7 +63,7 @@ public class ImageExtractor {
 	 * This method literally extracts all image links from files in the given directory.
 	 * @param path input path that contains Feedly's backup html files. 
 	 */
-	private void extractLink(String path){
+	public void extractLink(String path){
 		File folder = new File(path);
 		File[] listOfFiles = folder.listFiles();
 
@@ -76,7 +84,12 @@ public class ImageExtractor {
 					for (Element imageLink : imageLinks) {
 						downloadImage(imageLink);
 						
-						/** We wait for a second before downloading the next image */
+						/**
+						 * We wait for a second before downloading the next image.
+						 *
+						 * TODO: Parameterize this waiting period so that
+						 * users can set time in settings.ini file
+						 */
 						try {
 							TimeUnit.SECONDS.sleep(1);
 						} catch (InterruptedException e) {
